@@ -9,8 +9,14 @@ RUN apt-get -qqy install sudo
 RUN apt-get -qqy install python python-dev
 RUN apt-get -qqy install vim
 RUN apt-get -qqy install net-tools # ifconfig
+RUN apt-get -qqy install aptitude
+RUN apt-get -qqy install python-dev
+RUN apt-get -qqy install python-setuptools
+RUN apt-get -qqy install python-pip
+RUN apt-get -qqy install git
+RUN aptitude -y install build-essential
 
-#1.Install Postgresql 9.6
+# Install Postgresql 9.6
 RUN apt-get update 1>/dev/null && apt-get upgrade -y -q --no-install-recommends && apt-get install -y --no-install-recommends software-properties-common
 RUN add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main"
 RUN apt-get -qqy install wget
@@ -22,14 +28,20 @@ RUN apt-get -qqy install postgresql-server-dev-9.6
 RUN sed -i 's/md5/trust/g' /etc/postgresql/9.6/main/pg_hba.conf
 EXPOSE 5432
 
-#2.Install Git
-RUN apt-get -qqy install git
-
 # Add localadmin user
 RUN useradd -m localadmin && echo "localadmin:openstack" | chpasswd && adduser localadmin sudo
 USER localadmin
 RUN cd
 CMD /bin/bash
 
-# clone proget
-RUN cd /home/localadmin && git clone https://github.com/yenkuanlee/FoodResume
+# clone projet
+RUN cd /home/localadmin && git clone https://github.com/yenkuanlee/IPTable
+RUN cd /home/localadmin && git clone git://github.com/Kozea/Multicorn.git
+
+# Install Multicorn
+RUN cd /home/localadmin/Multicorn && dpkg --get-selections \| grep hold
+USER root
+RUN cd /home/localadmin/Multicorn && make && make install
+
+# Install ipfs
+
