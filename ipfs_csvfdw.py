@@ -1,5 +1,4 @@
 from . import ForeignDataWrapper
-import time
 
 class IPFSFdw(ForeignDataWrapper):
     def __init__(self, fdw_options, fdw_columns):
@@ -20,7 +19,6 @@ class IPFSFdw(ForeignDataWrapper):
             if line=="":continue
             tmp = line.split(self.delimiter)
             if len(tmp) > len(self.columns):
-               #log_to_postgres("data format error")
                exit("data format error")
             if cnt >= self.skip_header:
                 yield tmp[:len(self.columns)]
