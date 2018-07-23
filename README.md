@@ -19,7 +19,7 @@ $ sudo -u postgres psql
     CREATE EXTENSION multicorn;
     
     CREATE SERVER ipfs_srv foreign data wrapper multicorn options (
-        wrapper 'multicorn.ipfsfdw.IPFSFdw'
+        wrapper 'multicorn.ipfs_csvfdw.IPFSFdw'
     );
 
     create foreign table ipfstest (
