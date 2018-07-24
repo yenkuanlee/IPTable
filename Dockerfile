@@ -9,6 +9,7 @@ RUN apt-get -qqy install sudo
 RUN apt-get -qqy install python python-dev
 RUN apt-get -qqy install vim
 RUN apt-get -qqy install net-tools # ifconfig
+RUN apt-get -qq update
 RUN apt-get -qqy install aptitude
 RUN apt-get -qqy install python-dev
 RUN apt-get -qqy install python-setuptools
