@@ -57,4 +57,24 @@ $ sudo -u postgres psql
     );
 
     select * from ipfstest2;
+
+==========================================================================
+$ ipfs add -r ~/Multicorn
+
+$ sudo -u postgres psql
+
+    CREATE SERVER ipfs_srv3 foreign data wrapper multicorn options (
+        wrapper 'multicorn.ipfs_objectfdw.IPFSFdw'
+    );
+
+    create foreign table ipfstest3 (
+        data text,
+        name text,
+        hash text,
+        size int
+    ) server ipfs_srv3 options (
+           fhash 'QmQQa3HUgDtXzwwBcdcwsSVPWWJ7PVWc8UmbADV1FhxB8n'
+    );
+
+    select * from ipfstest3;
 ```
