@@ -13,6 +13,7 @@ class IPFSFdw(ForeignDataWrapper):
         res = api.cat(self.fhash)
         Jres = json.loads(res)
         for line in Jres:
+            line = dict((k.lower(), v) for k, v in line.iteritems())
             ltmp = list()
             for x in self.columns:
                 ltmp.append(line[x])
