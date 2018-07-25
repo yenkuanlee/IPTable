@@ -79,3 +79,7 @@ class ObjectNode:
             if field in kv.keys():
                 aa = (json.dumps({field:kv[field]}))
                 self.RemoveHash(aa)
+
+    def AddRow(self,row):
+        for x in row:
+            self.AddField(x,row[x])
