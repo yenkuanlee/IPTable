@@ -1,5 +1,6 @@
 # IPTable
 
+## Set up and test
 ```
 $ sudo /etc/init.d/postgresql start
 
@@ -77,4 +78,38 @@ $ sudo -u postgres psql
     );
 
     select * from ipfstest3;
+```
+
+## IPTable FDW
+
+### Push data to ipfs object
+```
+$ python push_data.py 
+    QmW5pgzxDJ8ao2eqKrnVse2idsABDikf55FYx4BBDj25ga
+```
+
+### Set up FDW and create foreign table
+```
+$ sudo -u postgres psql
+
+    CREATE SERVER ipserver foreign data wrapper multicorn options (
+        wrapper 'multicorn.ipfs_tablefdw.IPFSFdw'
+    );
+
+    create foreign table student (
+        Name text,
+        school text,
+        age int,
+        StudentID text
+    ) server ipserver options (
+          fhash 'QmW5pgzxDJ8ao2eqKrnVse2idsABDikf55FYx4BBDj25ga'
+    );
+
+    select * from student;
+```
+
+### modify fhash and update table
+
+```
+    ALTER FOREIGN TABLE student OPTIONS (SET fhash 'QmW5pgzxDJ8ao2eqKrnVse2idsABDikf55FYx4BBDj25ga');
 ```
