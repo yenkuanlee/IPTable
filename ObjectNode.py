@@ -40,6 +40,20 @@ class ObjectNode:
                 Rdict[y] = kv[y]
         return Rdict
 
+    def GetInfo2(self):
+        Rlist = list()
+        Tdict = self.api.object_get(self.ObjectHash)
+        for x in Tdict["Links"]:
+            T1dict = self.api.object_get(x["Hash"])
+            Rdict = dict()
+            Rdict["Data"] = T1dict["Data"]
+            for y in T1dict["Links"]:
+                kv = json.loads(y["Name"])
+                for z in kv:
+                    Rdict[z] = kv[z]
+            Rlist.append(Rdict)
+        return Rlist
+
     def AddHash(self,ObjectName,Fhash):
         self.ObjectHash = self.api.object_patch_add_link(self.ObjectHash,ObjectName,Fhash)['Hash']
         self.api.pin_add(self.ObjectHash)
@@ -58,7 +72,7 @@ class ObjectNode:
 
     def RemoveField(self,field):
         if field not in self.ObjectMatch:
-            return "FIELD NOE EXIST."
+            return "FIELD NOT EXIST."
         Tdict = self.api.object_get(self.ObjectHash)
         for x in Tdict["Links"]:
             kv = json.loads(x["Name"])
