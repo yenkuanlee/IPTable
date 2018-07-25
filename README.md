@@ -108,7 +108,7 @@ $ sudo -u postgres psql
     select * from student;
 ```
 
-### modify fhash and update table
+### Modify fhash and update table
 
 ```
     ALTER FOREIGN TABLE student OPTIONS (SET fhash 'QmW5pgzxDJ8ao2eqKrnVse2idsABDikf55FYx4BBDj25ga');
