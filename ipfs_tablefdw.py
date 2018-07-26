@@ -2,11 +2,18 @@ from . import ForeignDataWrapper
 import ipfsapi
 import json
 import ObjectNode
+import time
+from multiprocessing import Pool
+import os
+import psycopg2
 
 class IPFSFdw(ForeignDataWrapper):
     def __init__(self, fdw_options, fdw_columns):
         super(IPFSFdw, self).__init__(fdw_options, fdw_columns)
-        self.fhash = fdw_options["fhash"]
+        self.randomid = fdw_options["randomid"]
+        CleanNode = ObjectNode.ObjectNode()
+        CleanNode.new(self.randomid)
+        self.fhash = fdw_options.get('fhash', CleanNode.ObjectHash)
         self.columns = fdw_columns
         
         self.tx_hook = fdw_options.get('tx_hook', False)
@@ -14,8 +21,20 @@ class IPFSFdw(ForeignDataWrapper):
                                           list(self.columns.keys())[0])
 
         self.api = ipfsapi.connect('127.0.0.1', 5001)
+        self.conn = psycopg2.connect(database="postgres",user="postgres",host="127.0.0.1", port="5432")
+        self.cur = self.conn.cursor()
+        self.cur.execute("CREATE TABLE IF NOT EXISTS _lookup(randomid text PRIMARY KEY, fhash text);")
+        self.conn.commit()
+        self.cur.execute("SELECT FHASH FROM _lookup WHERE randomid = '"+self.randomid+"';")
+        try:
+            DontCare = self.cur.fetchone()[0]
+        except:
+            self.cur.execute("INSERT INTO _lookup VALUES('"+self.randomid+"','"+self.fhash+"');")
+            self.conn.commit()
 
     def execute(self, quals, columns):
+        self.cur.execute("SELECT FHASH FROM _lookup WHERE randomid = '"+self.randomid+"';")
+        self.fhash = self.cur.fetchone()[0]
         Jres = self.api.object_get(self.fhash)
         for x in Jres['Links']:
             a = ObjectNode.ObjectNode()
@@ -33,9 +52,11 @@ class IPFSFdw(ForeignDataWrapper):
         a = ObjectNode.ObjectNode()
         a.new("dog")
         a.AddRow(values)
-        table.AddHash("4",a.ObjectHash)
-        exit(table.ObjectHash)
-
+        Tlist = table.GetObjectInfo()["Links"]
+        table.AddHash(str(len(Tlist)+1),a.ObjectHash)
+        self.fhash = table.ObjectHash
+        self.cur.execute("UPDATE _lookup SET fhash = '"+self.fhash+"' WHERE randomid = '"+self.randomid+"';")
+        self.conn.commit()
 
 
     @property
