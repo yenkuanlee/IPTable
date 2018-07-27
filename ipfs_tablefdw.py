@@ -10,16 +10,15 @@ import psycopg2
 class IPFSFdw(ForeignDataWrapper):
     def __init__(self, fdw_options, fdw_columns):
         super(IPFSFdw, self).__init__(fdw_options, fdw_columns)
+        self.Dflag = False
+        self.Dlist = list()
         self.randomid = fdw_options["randomid"]
         CleanNode = ObjectNode.ObjectNode()
         CleanNode.new(self.randomid)
         self.fhash = fdw_options.get('fhash', CleanNode.ObjectHash)
         self.columns = fdw_columns
-        
         self.tx_hook = fdw_options.get('tx_hook', False)
-        self._row_id_column = fdw_options.get('row_id_column',
-                                          list(self.columns.keys())[0])
-
+        self._row_id_column = fdw_options.get('row_id_column',list(self.columns.keys())[0])
         self.api = ipfsapi.connect('127.0.0.1', 5001)
         self.conn = psycopg2.connect(database="postgres",user="postgres",host="127.0.0.1", port="5432")
         self.cur = self.conn.cursor()
@@ -41,10 +40,22 @@ class IPFSFdw(ForeignDataWrapper):
             a.load(x['Hash'])
             line = a.GetInfo()
             line = dict((k.lower(), v) for k, v in line.iteritems())
+            line['tsid'] = x['Name']
             ltmp = list()
-            for x in self.columns:
-                ltmp.append(line[x])
+            for y in self.columns:
+                ltmp.append(line[y])
             yield ltmp[:len(self.columns)]
+        # For Delete
+        if self.Dflag:
+            table = ObjectNode.ObjectNode()
+            table.load(self.fhash)
+            for x in self.Dlist:
+                table.RemoveHash(x)
+            self.fhash = table.ObjectHash
+            self.cur.execute("UPDATE _lookup SET fhash = '"+self.fhash+"' WHERE randomid = '"+self.randomid+"';")
+            self.conn.commit()
+            self.Dlist = list()
+            self.Dflag = False
 
     def insert(self, values):
         table = ObjectNode.ObjectNode()
@@ -53,14 +64,20 @@ class IPFSFdw(ForeignDataWrapper):
         a.new("dog")
         a.AddRow(values)
         Tlist = table.GetObjectInfo()["Links"]
-        table.AddHash(str(len(Tlist)+1),a.ObjectHash)
+        ts = str(int(time.time()*1000))
+        table.AddHash(ts,a.ObjectHash)
         self.fhash = table.ObjectHash
         self.cur.execute("UPDATE _lookup SET fhash = '"+self.fhash+"' WHERE randomid = '"+self.randomid+"';")
         self.conn.commit()
+        self.Dflag = False
+
+    def delete(self, oldvalues):
+        self.Dlist.append(oldvalues)
 
 
     @property
     def rowid_column(self):
+        self.Dflag = True
         return self._row_id_column
 
     def begin(self, serializable):
