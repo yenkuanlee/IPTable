@@ -108,10 +108,18 @@ $ sudo -u postgres psql
     );
 
     select * from student;
+    insert into student values(1,'Dog','MCU',38,'9487');
+    update student set name = 'Cat' where school = 'MCU';
+    delete from student where name = 'Cat';
 ```
 
-### Modify fhash and update table
+### Modify fhash and update foreign table
 
 ```
     ALTER FOREIGN TABLE student OPTIONS (SET fhash 'QmW5pgzxDJ8ao2eqKrnVse2idsABDikf55FYx4BBDj25ga');
+```
+
+### Get fhash from lookup table in DB
+```
+    SELECT * FROM _lookup WHERE table_name = 'student';
 ```
