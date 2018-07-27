@@ -97,7 +97,7 @@ $ sudo -u postgres psql
     );
 
     create foreign table student (
-        TSID int,
+        TSID bigint,
         Name text,
         school text,
         age int,
