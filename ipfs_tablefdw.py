@@ -27,7 +27,7 @@ class IPFSFdw(ForeignDataWrapper):
         self.conn.commit()
         self.cur.execute("SELECT FHASH FROM _lookup WHERE table_name = '"+self.table_name+"';")
         try:
-            DontCare = self.cur.fetchone()[0]
+            self.fhash = self.cur.fetchone()[0]
         except:
             self.cur.execute("INSERT INTO _lookup VALUES('"+self.table_name+"','"+self.fhash+"');")
             self.conn.commit()
@@ -50,8 +50,13 @@ class IPFSFdw(ForeignDataWrapper):
         if self.Dflag:
             table = ObjectNode.ObjectNode()
             table.load(self.fhash)
-            for x in self.Dlist:
-                table.RemoveHash(x)
+            RowList = table.GetObjectInfo()['Links']
+            if len(self.Dlist) == len(RowList): # delete all
+                table = ObjectNode.ObjectNode()
+                table.new(self.table_name)
+            else:
+                for x in self.Dlist:
+                    table.RemoveHash(x)
             self.fhash = table.ObjectHash
             self.cur.execute("UPDATE _lookup SET fhash = '"+self.fhash+"' WHERE table_name = '"+self.table_name+"';")
             self.conn.commit()
