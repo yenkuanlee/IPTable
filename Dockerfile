@@ -59,6 +59,6 @@ RUN cd /home/localadmin/Multicorn && make && make install
 
 # Install ipfs
 RUN cp /home/localadmin/IPTable/FDW/ipfs_*fdw.py /usr/local/lib/python2.7/dist-packages/multicorn-1.3.4.dev0-py2.7-linux-x86_64.egg/multicorn && cp /home/localadmin/IPTable/ObjectNode.py /usr/local/lib/python2.7/dist-packages/multicorn-1.3.4.dev0-py2.7-linux-x86_64.egg/multicorn && cp /home/localadmin/IPTable/ipfs /usr/local/bin && chmod 777 /usr/local/bin/ipfs
-RUN pip install ipfsapi
+RUN pip2 install ipfsapi
 
 USER localadmin

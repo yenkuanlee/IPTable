@@ -8,6 +8,8 @@ host = '140.92.143.82'
 account = '0xa790753b84164d4fd0ad4f85ac0f44760c3a4a99'
 passwd = '123'
 
+schema = "CREATE FOREIGN TABLE IF NOT EXISTS test(a int)SERVER ipserver OPTIONS(table_name 'test');"
+
 f = open('iptable.sol','r')
 X = ""
 while True:
@@ -29,21 +31,11 @@ w3.personal.unlockAccount(account, passwd)
 contractt = w3.eth.contract(abi=contract_interface['abi'], bytecode=contract_interface['bin'])
 
 # Get transaction hash from deployed contract
-tx_hash = contractt.deploy(transaction={'from': account, 'gas': 4000000})
-###print(tx_hash)
+tx_hash = contractt.deploy(args=[schema],transaction={'from': account, 'gas': 4000000})
 
 # Get tx receipt to get contract address
+w3.eth.waitForTransactionReceipt(tx_hash)
 tx_receipt = w3.eth.getTransactionReceipt(tx_hash)
-
-cnt = 1
-while True:
-	if tx_receipt == None:
-		print("wait...("+str(cnt)+")")
-		cnt += 1
-		time.sleep(1)
-		tx_receipt = w3.eth.getTransactionReceipt(tx_hash)
-	else:
-		break
 
 ###print(tx_receipt)
 contract_address = tx_receipt['contractAddress']
