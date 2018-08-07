@@ -29,6 +29,19 @@ RUN apt-get -qqy install postgresql-server-dev-9.6
 RUN sed -i 's/md5/trust/g' /etc/postgresql/9.6/main/pg_hba.conf
 EXPOSE 5432
 
+# Set Python3 and Install web3
+RUN apt-get -qqy install python3.5-dev
+RUN apt -qqy install python3-setuptools
+RUN easy_install3 pip
+RUN add-apt-repository ppa:ethereum/ethereum
+RUN apt-get update
+RUN apt-get -qqy install solc
+RUN pip3 install web3
+RUN pip install py-solc
+RUN apt-get install -y locales
+RUN locale-gen zh_TW zh_TW.UTF-8 zh_CN.UTF-8 en_US.UTF-8
+RUN echo 'export LC_ALL=zh_TW.utf8' >> /root/.bashrc
+
 # Add localadmin user
 RUN useradd -m localadmin && echo "localadmin:openstack" | chpasswd && adduser localadmin sudo
 USER localadmin
