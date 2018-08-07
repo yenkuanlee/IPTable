@@ -8,7 +8,7 @@ host = '140.92.143.82'
 account = '0xa790753b84164d4fd0ad4f85ac0f44760c3a4a99'
 passwd = '123'
 
-schema = "CREATE FOREIGN TABLE IF NOT EXISTS test(a int)SERVER ipserver OPTIONS(table_name 'test');"
+schema = "CREATE FOREIGN TABLE IF NOT EXISTS test(tsid bigint,a int)SERVER ipserver OPTIONS(table_name 'test');"
 
 f = open('iptable.sol','r')
 X = ""

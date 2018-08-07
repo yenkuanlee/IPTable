@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import getpass
 import json
 from web3 import Web3, HTTPProvider, TestRPCProvider
 import os
@@ -16,10 +17,13 @@ class IPControl:
 
         self.host = _host
         self.account = _account
-        self.passwd = '123'
+        self.passwd = getpass.getpass('Password:')
         self.w3 = Web3(HTTPProvider('http://'+self.host+':8545'))
         self.account = self.w3.toChecksumAddress(self.account)
-        self.w3.personal.unlockAccount(self.account,self.passwd)
+        check_passwd = self.w3.personal.unlockAccount(self.account,self.passwd)
+        if not check_passwd :
+            print("Wrong password, failed to log in.")
+            exit(0)
         self.contract_instance = self.w3.eth.contract(abi=abi, address=contract_address)
 
         self.conn = psycopg2.connect(database="postgres",user="postgres",host="127.0.0.1", port="5432")
@@ -31,21 +35,30 @@ class IPControl:
     def GetInfo(self):
         return self.contract_instance.functions.GetInfo().call()
 
-    def SetShard(self,Ehash):
-        self.contract_instance.functions.setShard(Ehash).transact({'from': self.account})
+    def GetShardInfo(self,Sman):
+        Sman = self.w3.toChecksumAddress(Sman)
+        result = self.contract_instance.functions.GetShardInfo(Sman).call()
+        Odict = dict()
+        Odict["RowCount"] = result[0]
+        Odict["Description"] = result[1]
+        return json.dumps(Odict)
+
+    def CommitShard(self,Fhash):
+        self.contract_instance.functions.commitShard(Fhash).transact({'from': self.account})
+
+    def PushShard(self,rcnt,dct):
+        self.contract_instance.functions.pushShard(rcnt,dct).transact({'from': self.account})
 
     def CreateTable(self):
         schema = self.GetSchema()
         self.cur.execute(schema)
         self.conn.commit()        
-        
 
-'''
-
-# Contract instance in concise mode
-contract_instance = w3.eth.contract(abi=abi, address=contract_address)
-
-#contract_instance.functions.setShard(Ehash).transact({'from': account})
-#print(contract_instance.functions.GetInfo().call())
-print(contract_instance.functions.GetSchema().call())
-'''
+    def UploadFhash(self,table_name):
+        try:
+            self.cur.execute("SELECT FHASH FROM _lookup WHERE table_name = '"+table_name+"';")
+            fhash = self.cur.fetchone()[0]
+            self.CommitShard(fhash)
+        except Exception as e:
+            print(e)
+            print("NO UPLOAD")
