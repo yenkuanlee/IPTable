@@ -36,6 +36,7 @@ RUN easy_install3 pip
 RUN add-apt-repository ppa:ethereum/ethereum
 RUN apt-get update
 RUN apt-get -qqy install solc
+RUN apt-get -qqy install python3-psycopg2
 RUN pip3 install web3
 RUN pip install py-solc
 RUN apt-get install -y locales
