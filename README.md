@@ -11,7 +11,7 @@ Through the smart contract, we can do the following things:
   - create local foreign table by the schema in contract
   - edit the foreign table
   - commit fhash to the contract
-  - push table shard with some information and become a saler
+  - push table shard with some information and become a table saler
   - look the information of table shard which had already be push
   - buy some interesting table shard and put into pocket of contract
   - create local foreign table which is received from pocket
