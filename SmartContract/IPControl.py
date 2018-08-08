@@ -20,6 +20,7 @@ class IPControl:
         self.passwd = getpass.getpass('Password:')
         self.w3 = Web3(HTTPProvider('http://'+self.host+':8545'))
         self.account = self.w3.toChecksumAddress(self.account)
+        self.w3.eth.defaultAccount = self.account
         check_passwd = self.w3.personal.unlockAccount(self.account,self.passwd)
         if not check_passwd :
             print("Wrong password, failed to log in.")
