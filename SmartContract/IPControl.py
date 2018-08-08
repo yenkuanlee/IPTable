@@ -43,15 +43,22 @@ class IPControl:
         Odict["Description"] = result[1]
         return json.dumps(Odict)
 
+    def GetSaleList(self):
+        result =  self.contract_instance.functions.GetSaleList().call()
+        return result
+
     def CommitShard(self,Fhash):
         self.contract_instance.functions.commitShard(Fhash).transact({'from': self.account})
 
     def PushShard(self,rcnt,dct):
         self.contract_instance.functions.pushShard(rcnt,dct).transact({'from': self.account})
 
-    def CreateTable(self):
+    def CreateTable(self, table_name):
+        TSID = "(tsid bigint, "
         schema = self.GetSchema()
-        self.cur.execute(schema)
+        schema = schema.replace("(",TSID)
+        SQL = "CREATE FOREIGN TABLE IF NOT EXISTS "+table_name+schema+"SERVER ipserver OPTIONS(table_name '"+table_name+"');"
+        self.cur.execute(SQL)
         self.conn.commit()        
 
     def UploadFhash(self,table_name):
