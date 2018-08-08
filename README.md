@@ -1,6 +1,23 @@
 # IPTable
 
-## Set up and test
+IPTable is a Decentralized DB table, which is implement by IPFS FDW.
+Users can use the foreign table in sql language(including SELECT/INSERT/DELETE/UPDATE).
+There are a hash bind with IPTable, called fhash.
+By transmit the fhash to others node with same IPFS domain, people can get and use the IPTable immediatly.
+
+In this project, there is a Ethereum smart contract to apply IPTable.
+Users can deploy a contract with table schema, and people can use the contract to do cooperative operation with IPTable.
+Through the smart contract, we can do the following things:
+  - create local foreign table by the schema in contract
+  - edit the foreign table
+  - commit fhash to the contract
+  - push table shard with some information and become a saler
+  - look the information of table shard which had already be push
+  - buy some interesting table shard and put into pocket of contract
+  - create local foreign table which is received from pocket
+
+
+## Set up and test (ipfs_csv, ipfs_json, ipfs_object)
 ```
 $ sudo /etc/init.d/postgresql start
 
