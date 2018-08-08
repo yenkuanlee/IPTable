@@ -36,7 +36,7 @@ contract IPTable {
         return true;
     }
 
-    function commitShard(string Fhash){
+    function commitFhash(string Fhash){
 	shard[msg.sender] = Fhash;
     }
 
@@ -95,6 +95,20 @@ contract IPTable {
         }
     }
 
-    // function GetPocket
+    function ShowPocket() constant returns(uint[]){
+        uint[] memory output = new uint[](pocket[msg.sender].length);
+        for(uint i=0;i<pocket[msg.sender].length;i++){
+            output[i] = pocket[msg.sender][i].tsid;
+        }
+        return output;
+    }
+
+    function GetPocketShardInfo(uint256 TSID)public returns(uint256,address,uint,string,string){
+        for(uint i=0;i<pocket[msg.sender].length;i++){
+            if(pocket[msg.sender][i].tsid==TSID){
+                return(TSID,pocket[msg.sender][i].owner,pocket[msg.sender][i].rowCount,pocket[msg.sender][i].description,pocket[msg.sender][i].fhash);
+            }
+        }
+    }
 
 }

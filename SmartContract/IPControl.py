@@ -47,8 +47,28 @@ class IPControl:
         result =  self.contract_instance.functions.GetSaleList().call()
         return result
 
-    def CommitShard(self,Fhash):
-        self.contract_instance.functions.commitShard(Fhash).transact({'from': self.account})
+    def Buy(self,Sman):
+        self.contract_instance.functions.Buy(Sman).transact({'from': self.account})
+
+    def ShowPocket(self):
+        result =  self.contract_instance.functions.ShowPocket().call()
+        return result
+
+    def GetPocketShardInfo(self,TSID):
+        Odict = dict()
+        result = self.contract_instance.functions.GetPocketShardInfo(TSID).call()
+        try:
+            Odict['TSID'] = result[0]
+            Odict['owner'] = result[1]
+            Odict['rowCount'] = result[2]
+            Odict['description'] = result[3]
+            Odict['fhash'] = result[4]
+        except:
+            pass
+        return Odict
+
+    def CommitFhash(self,Fhash):
+        self.contract_instance.functions.commitFhash(Fhash).transact({'from': self.account})
 
     def PushShard(self,rcnt,dct):
         self.contract_instance.functions.pushShard(rcnt,dct).transact({'from': self.account})
@@ -61,11 +81,20 @@ class IPControl:
         self.cur.execute(SQL)
         self.conn.commit()        
 
-    def UploadFhash(self,table_name):
+    def CreateTable(self,table_name,TTSID):
+        fhash = self.GetPocketShardInfo(TTSID)['fhash']
+        TSID = "(tsid bigint, "
+        schema = self.GetSchema()
+        schema = schema.replace("(",TSID)
+        SQL = "CREATE FOREIGN TABLE IF NOT EXISTS "+table_name+schema+"SERVER ipserver OPTIONS(table_name '"+table_name+"', fhash '"+fhash+"');"
+        self.cur.execute(SQL)
+        self.conn.commit()
+
+    def CommitShard(self,table_name):
         try:
             self.cur.execute("SELECT FHASH FROM _lookup WHERE table_name = '"+table_name+"';")
             fhash = self.cur.fetchone()[0]
-            self.CommitShard(fhash)
+            self.CommitFhash(fhash)
         except Exception as e:
             print(e)
             print("NO UPLOAD")
