@@ -17,6 +17,23 @@ Through the smart contract, we can do the following things:
   - create local foreign table which is received from pocket
 
 
+## Install IPTable by Docker
+
+Strongly suggest using docker to install IPTable now.
+
+Unfortunately, not for mac!!!
+  - https://github.com/docker/for-mac/issues/68
+
+```
+$ sudo docker build -t "iptable:test" .
+$ sudo docker run -dti --network=host iptable:test /bin/sh
+$ sudo docker exec -ti $CONTAINER_ID bash
+$ cd ~/IPTable
+$ git pull
+$ sh deploy.sh
+
+
+
 ## Set up and test (ipfs_csv, ipfs_json, ipfs_object)
 ```
 $ sudo /etc/init.d/postgresql start
