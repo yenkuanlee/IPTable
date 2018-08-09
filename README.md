@@ -31,7 +31,7 @@ $ sudo docker exec -ti $CONTAINER_ID bash
 $ cd ~/IPTable
 $ git pull
 $ sh deploy.sh
-
+```
 
 
 ## Set up and test (ipfs_csv, ipfs_json, ipfs_object)
