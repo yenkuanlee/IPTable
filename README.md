@@ -185,6 +185,7 @@ $ python3 deploy_iptable_contract.py
 
 ### Use the contract
 There are a command line tool called IPControl.py. 
+
 Users can modify the test.py and apply the smart contract with IPTable.
 
 ```
@@ -201,7 +202,6 @@ import IPControl
 #print(a.GetInfo())    # Get info of contract fhash
 #a.PushShard(2,"nice data of student ages.")    # be a saler
 
-
 ### Sale / Buy data
 #Saler = a.GetSaleList()
 #print(Saler)
@@ -209,13 +209,14 @@ import IPControl
 
 #a.Buy(Saler[0])
 
-
 ### Use data
 #Pocket = a.ShowPocket()
 #print(Pocket)
 #print(a.GetPocketShardInfo(Pocket[0]))
 
 #a.CreateTable("Person",Pocket[0])
+
+
 
 $ python3 test.py
 ```
