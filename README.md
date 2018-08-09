@@ -173,7 +173,7 @@ This is only a option to protect IPTable because the FDW is still quering lookup
 To use the smart contract of IPTable, we have to prepare a ethereum node. 
 We can use IPDC ER project, the best project in the world, to build a wonderful envirement with ethereum private chain and a private cluster of IPFS. 
 
-### Deploy the contract
+### Deploy contract
 There are three arguments in deploy_iptable_contract.py
   - host
   - account
@@ -183,7 +183,7 @@ There are three arguments in deploy_iptable_contract.py
 $ python3 deploy_iptable_contract.py
 ```
 
-### Use the contract
+### Use contract
 There are a command line tool called IPControl.py. 
 
 Users can modify the test.py and apply the smart contract with IPTable.
