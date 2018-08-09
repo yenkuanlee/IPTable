@@ -113,6 +113,7 @@ The structure of IPTable object is a three level merkle tree.
   - Level 1 : table
   - Level 2 : row
   - Level 3 : field
+
 In a IPTable merkle tree, node is object hash and edge is the value of object. 
 
 In the first level, node is the fhash which can represent a IPTable and will be put into the option of foreign table.
