@@ -8,13 +8,13 @@ By transmit the fhash to others node with same IPFS domain, people can get and u
 In this project, there is a Ethereum smart contract to apply IPTable.
 Users can deploy a contract with table schema, and people can use the contract to do cooperative operation with IPTable.
 Through the smart contract, we can do the following things:
-  - create local foreign table by the schema in contract
-  - edit the foreign table
-  - commit fhash to the contract
-  - push table shard with some information and become a table saler
-  - look the information of table shard which had already be push
-  - buy some interesting table shard and put into pocket of contract
-  - create local foreign table which is received from pocket
+  - Create local foreign table by the schema in contract
+  - Edit the foreign table
+  - Commit fhash to the contract
+  - Push table shard with some information and become a table saler
+  - Look the information of table shard which had already be push
+  - Buy some interesting table shard and put into pocket of contract
+  - Create local foreign table which is received from pocket
 
 
 ## Install IPTable by Docker
@@ -109,7 +109,19 @@ $ sudo -u postgres psql
 
 ## IPTable FDW
 IPTable FDW is a foreign data wrapper which use IPFS object to represent a table in PostgreSQL. 
+The structure of IPTable object is a three level merkle tree. 
+  - Level 1 : table
+  - Level 2 : row
+  - Level 3 : field
+In a IPTable merkle tree, node is object hash and edge is the value of object. 
 
+In the first level, node is the fhash which can represent a IPTable and will be put into the option of foreign table.
+In the second level, node represent object hash of one row , and edge is a timestamp ID.
+In the third level, node represent object hash of filed name, and edge is correspond value of field.
+ 
+In a IPTable merkle tree, there is only one node in level 1(root); 
+The number of nodes in level 2 is rowCount; 
+The number of nodes in level 2 is qual to the number of field.
 
 ### Push data to ipfs object
 ```
@@ -143,8 +155,8 @@ $ sudo -u postgres psql
 ```
 
 ### Modify fhash and update foreign table
-After executing sql language to update IPTable, the fhash in look up table will be changed. 
-We can do the following syntax to modify the fhash of IPTable, so that the status of IPTable is newest. 
+After executing sql language and update IPTable, the fhash in look up table will be changed. 
+We can do the following syntax to modify the fhash of IPTable, so that the status of IPTable is the newest. 
 This is only a option to protect IPTable because the FDW is still quering lookup table to get fhash.
 
 ```
