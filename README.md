@@ -36,13 +36,6 @@ $ sh deploy.sh
 
 ## Set up and test (ipfs_csv, ipfs_json, ipfs_object)
 ```
-$ sudo /etc/init.d/postgresql start
-
-$ ipfs init
-
-$ ipfs daemon &
-
-==========================================================================
 $ vi /tmp/test.csv
 Year,Make,Model,Length
 1997,Ford,E350,2.34
@@ -115,6 +108,8 @@ $ sudo -u postgres psql
 ```
 
 ## IPTable FDW
+IPTable FDW is a foreign data wrapper which use IPFS object to represent a table in PostgreSQL. 
+
 
 ### Push data to ipfs object
 ```
@@ -148,6 +143,9 @@ $ sudo -u postgres psql
 ```
 
 ### Modify fhash and update foreign table
+After executing sql language to update IPTable, the fhash in look up table will be changed. 
+We can do the following syntax to modify the fhash of IPTable, so that the status of IPTable is newest. 
+This is only a option to protect IPTable because the FDW is still quering lookup table to get fhash.
 
 ```
     ALTER FOREIGN TABLE student OPTIONS (SET fhash 'QmW5pgzxDJ8ao2eqKrnVse2idsABDikf55FYx4BBDj25ga');
