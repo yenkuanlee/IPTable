@@ -63,7 +63,7 @@ class IPFSFdw(ForeignDataWrapper):
             # For Update
             for x in self.Ulist:
                 a = ObjectNode.ObjectNode()
-                a.new("cat")
+                a.new(self.api.id()['ID'])
                 a.AddRow(x)
                 table.AddHash(x['tsid'],a.ObjectHash)
             self.fhash = table.ObjectHash
@@ -78,7 +78,7 @@ class IPFSFdw(ForeignDataWrapper):
         table = ObjectNode.ObjectNode()
         table.load(self.fhash)
         a = ObjectNode.ObjectNode()
-        a.new("dog")
+        a.new(self.api.id()['ID'])
         a.AddRow(values)
         #Tlist = table.GetObjectInfo()["Links"]
         ts = str(int(time.time()*1000))
