@@ -1,10 +1,10 @@
 import iota
 from iota import TryteString
+import json
 import psycopg2
 
 class IOTATransaction:
-    def __init__(self, _MySeed):
-        self.MySeed = str.encode(_MySeed)
+    def __init__(self):
         self.FinalBundle = "INIT"
         self.TransactionHashList = list()
         #self.api = iota.Iota("https://field.deviota.com:443")
@@ -45,3 +45,14 @@ class IOTATransaction:
             return cur.fetchone()[0]
         except:
             return "ERROR"
+    def CreateTable(self,table_name, TID):
+        try:
+            Jinfo = json.loads(self.GetTransactionMessage(TID))
+            sql = "CREATE FOREIGN TABLE "+table_name+Jinfo['table_schema']+"SERVER ipserver OPTIONS (table_name '"+table_name+"', fhash '"+Jinfo['fhash']+"');"
+            conn = psycopg2.connect(database="postgres",user="postgres",host="127.0.0.1", port="5432")
+            cur = conn.cursor()
+            cur.execute(sql)
+            conn.commit()
+            return {"status": "SUCCESS"}
+        except Exception as e:
+            return {"status": "ERROR", "log": str(e)}

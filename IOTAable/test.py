@@ -1,16 +1,25 @@
+# -*- coding: UTF-8 -*-
+import json
+import ipfsapi
 import IOTATransaction
+import time
+a = IOTATransaction.IOTATransaction()
+Ftag = 'IPTABLETEST'
+api = ipfsapi.connect('127.0.0.1', 5001)
 
-From = 'HGW9HB9LJPYUGVHNGCPLFKKPNZAIIFHZBDHKSGMQKFMANUBASSMSV9TAJSSMPRZZU9SFZULXKJ9YLAIUA'
 To = 'BXOM9LUNLPSEXBRJV9UUNLHSUHABEOGHQOGNBNBUEYSGOFZOEPYKEYRSFTXBOEJLUODUQXXGQ9NWQBSGH'
 
+table_info = dict()
+table_info['table_name'] = 'accounting'
+table_info['table_schema'] = '(TSID bigint,Adate text,item text,description text,twd int)'
+table_info['description'] = '這是Kevin的記帳'
+table_info['fhash'] = a.GetFhash('accounting')
+table_info['table_rowCount'] = len(api.object_get(table_info['fhash'])['Links'])
 
-a = IOTATransaction.IOTATransaction(From)
-Ftag = 'IPTABLETEST'
-fhash = a.GetFhash('accounting')
+#pt = a.MakePreparingTransaction(To, json.dumps(table_info), tag=Ftag)
+#a.SendTransaction([pt])
+#print(a.GetTransactionHash())
 
-pt = a.MakePreparingTransaction(To, fhash, tag=Ftag)
-a.SendTransaction([pt])
-print(a.GetTransactionHash())
-
-#print(a.GetTransactionMessage('WGRXJ9USIJ9MXFTGBYTRHH9BPKBAAP9ZJIKHYRRFVSWFXCJHCIKVCZMBQ9QRGFRZRTIMRIZUWNGYZ9999'))
-
+TID = 'CZIIPIYJNSYZCFYXXHYJHXLPMDYUIVLROQOKEEVFHZLZJVLZBPGAIHBBVENQCBAIGPFGGAKXVUO9Z9999'
+#info = a.GetTransactionMessage(TID)
+print(a.CreateTable('kevin',TID))
