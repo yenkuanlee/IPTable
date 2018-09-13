@@ -1,6 +1,7 @@
 import base64
 import iota
 from iota import TryteString
+import ipfsapi
 import json
 import psycopg2
 
@@ -10,9 +11,9 @@ class IOTATransaction:
         self.TransactionHashList = list()
         #self.api = iota.Iota("https://field.deviota.com:443")
         self.api = iota.Iota("http://140.116.247.117:14265")
-    def MakePreparingTransaction(self, TargetAddress, StringMessage, tag='KEVIN999IS999HANDSOME'):
+    def MakePreparingTransaction(self, TargetAddress, StringMessage, tag='KEVIN999IS999HANDSOME', Ivalue=0):
         TargetAddress = str.encode(TargetAddress)
-        pt = iota.ProposedTransaction(address = iota.Address(TargetAddress),message = iota.TryteString.from_unicode(StringMessage),tag = iota.Tag(str.encode(tag)),value=0)
+        pt = iota.ProposedTransaction(address = iota.Address(TargetAddress),message = iota.TryteString.from_unicode(StringMessage),tag = iota.Tag(str.encode(tag)),value=Ivalue)
         return pt
     def SendTransaction(self, PTList, dep=3, mwm=14):
         FinalBundle = self.api.send_transfer(depth=dep,transfers=PTList,min_weight_magnitude=mwm)['bundle']
@@ -54,20 +55,21 @@ class IOTATransaction:
             dec.append(dec_c)
         return "".join(dec)
 
-    def GetFhash(self, table_name):
+    def GetFhash(self, table_name, Ekey):
         conn = psycopg2.connect(database="postgres",user="postgres",host="127.0.0.1", port="5432")
         cur = conn.cursor()
         cur.execute("SELECT FHASH FROM _lookup WHERE table_name = '"+table_name+"';")
-        EncodeFhash = self.Kencode('KEVIN',cur.fetchone()[0])
-        #try:
-        return EncodeFhash
-        #except Exception as e:
-        #    return {"status":"ERROR", "log":str(e)}
+        EncodeFhash = self.Kencode(Ekey,cur.fetchone()[0])
+        try:
+            return EncodeFhash
+        except Exception as e:
+            return {"status":"ERROR", "log":str(e)}
     def CreateTable(self,table_name, TID):
         try:
-            fhash = self.Kdecode('KEVIN',Jinfo['fhash'])
+            iapi = ipfsapi.connect('127.0.0.1', 5001)
             Jinfo = json.loads(self.GetTransactionMessage(TID))
-            sql = "CREATE FOREIGN TABLE "+table_name+Jinfo['table_schema']+"SERVER ipserver OPTIONS (table_name '"+table_name+"', fhash '"+Jinfo['fhash']+"');"
+            fhash = self.Kdecode(iapi.id()['ID'],Jinfo['fhash'])
+            sql = "CREATE FOREIGN TABLE "+table_name+Jinfo['table_schema']+"SERVER ipserver OPTIONS (table_name '"+table_name+"', fhash '"+fhash+"');"
             conn = psycopg2.connect(database="postgres",user="postgres",host="127.0.0.1", port="5432")
             cur = conn.cursor()
             cur.execute(sql)
