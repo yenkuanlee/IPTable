@@ -58,11 +58,11 @@ class IOTATransaction:
         conn = psycopg2.connect(database="postgres",user="postgres",host="127.0.0.1", port="5432")
         cur = conn.cursor()
         cur.execute("SELECT FHASH FROM _lookup WHERE table_name = '"+table_name+"';")
-        a = self.Kencode('KEVIN',cur.fetchone()[0])
-        try:
-            return self.Kencode('KEVIN',cur.fetchone()[0])
-        except Exception as e:
-            return {"status":"ERROR", "log":str(e)}
+        EncodeFhash = self.Kencode('KEVIN',cur.fetchone()[0])
+        #try:
+        return EncodeFhash
+        #except Exception as e:
+        #    return {"status":"ERROR", "log":str(e)}
     def CreateTable(self,table_name, TID):
         try:
             fhash = self.Kdecode('KEVIN',Jinfo['fhash'])
