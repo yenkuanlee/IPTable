@@ -73,6 +73,10 @@ def DataTransform_IPTABLE(TID, table_name, table_schema, description, table_rowC
     table_info['description'] = description
     table_info['table_rowCount'] = int(table_rowCount)
     try:
+        for x in Jinfo['target_ipfs_address']:
+            if '/ip6/' in x or '/127.0.0.1/' in x:
+                continue
+            api.swarm_connect(x)
         tmp = Jinfo['target_ipfs_address'][0].split("/")
         table_info['fhash'] = a.GetFhash(table_name,tmp[len(tmp)-1])
         pt = iotalent.MakePreparingTransaction(Jinfo['wallet_address'], json.dumps(table_info), tag=channel_tag)
