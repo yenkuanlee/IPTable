@@ -101,7 +101,7 @@ $ sudo -u postgres psql
         hash text,
         size int
     ) server ipfs_srv3 options (
-           fhash 'QmQQa3HUgDtXzwwBcdcwsSVPWWJ7PVWc8UmbADV1FhxB8n'
+           fhash 'QmWi9a9wZ3ZTnDn34bQfbJsQV2mgoShz5TDcJ1BK8HJGsJ'
     );
 
     select * from ipfstest3;
